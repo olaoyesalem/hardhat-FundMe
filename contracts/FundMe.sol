@@ -4,18 +4,25 @@ pragma solidity ^0.8.0;
 // 2. Imports
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "./PriceConverter.sol";
-error notOwner();
-error sendFailed();
+error FundMe_notOwner();
+error FundMe_sendFailed();
 
 // if a variable is set one time to a particular value,  we use the keyword "constant", " Immutable";
 // the variables constants no longer take up a storage spot rather they are inducted into the byte code of the smart contract
-
+/**
+ @title A contract for crowd funding
+ @author Olaoye Salem
+ @notice This contract is to demo a sample funding contract
+ @dev This implements price feeds as our library
+ */
 contract FundMe{
     using PriceConverter for uint256;
 
 uint256 public constant MINIMUM_USD = 50*1e18; 
 AggregatorV3Interface public priceFeed;
-constructor(address priceFeedAddress){ 
+
+
+constructor(address priceFeedAddress){  // constructor is a function that gets automatically called up once the contract is deployed.
   i_owner=msg.sender;   
   priceFeed = AggregatorV3Interface(priceFeedAddress);
 }
@@ -26,7 +33,14 @@ mapping(address=>uint256) public addressToAmountFunded; // to map funders to the
 
 
 address public immutable i_owner;
-// constructor is a function that gets automatically called up once the contract is deployed.
+
+modifier onlyOwner{
+         if(msg.sender !=i_owner){
+    revert FundMe_notOwner();
+}
+    _;
+}
+
 
 
 function fund() public payable onlyOwner {
@@ -45,13 +59,13 @@ addressToAmountFunded[funder]=0;
  }
 
 funders = new address[](0);
-payable(msg.sender).transfer(address(this).balance);
+//payable(msg.sender).transfer(address(this).balance);
 
 // send
-bool sendSuccess = payable(msg.sender).send(address(this).balance);
-if(!sendSuccess){
-    revert sendFailed();
-}
+// bool sendSuccess = payable(msg.sender).send(address(this).balance);
+// if(!sendSuccess){
+//     revert sendFailed();
+// }
 // call
 // this is a lower level command; it can be used to call functions wvwn without having thier ABI
 
@@ -59,23 +73,9 @@ if(!sendSuccess){
 require(callSuccess,"call Failed");
 
 
-//   modifier onlyOwner{ 
-
-// if(msg.sender !=i_owner){
-//     revert notOwner();
-// }
-// _;
-// }
-// To still gets the details of the transaaction if  someone calls the contract without using the fund();
-// recieve()
  
 }
-modifier onlyOwner{
-         if(msg.sender !=i_owner){
-    revert notOwner();
-}
-    _;
-}
+
 receive() external payable{
     fund();
 }
