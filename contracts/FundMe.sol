@@ -45,10 +45,9 @@ modifier onlyOwner{
 
 function fund() public payable onlyOwner {
 
-require(msg.value.getConversionRate( priceFeed)>=MINIMUM_USD,"Didn't send enough"); 
- funders.push(msg.sender);
-
- addressToAmountFunded [msg.sender]+=msg.value;// mapping the addrsses to the  amount they funded
+require(msg.value.getConversionRate( priceFeed)>=MINIMUM_USD,"Didn't send enough");  
+addressToAmountFunded [msg.sender]+=msg.value;// mapping the addrsses to the  amount they funded
+funders.push(msg.sender);
 }
 
 function Withdraw() public onlyOwner {
