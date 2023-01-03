@@ -4,7 +4,7 @@ const{developmentChains} = require("../../helper-hardhat-config");
 
 developmentChains.includes(network.name) ? describe.skip : // only runs on test net
 describe("FundMe", function(){
-    let FundMe,deployer, mockV3Aggregator
+    let FundMe,deployer
     const sendValue = ethers.utils.parseEther("1"); 
     beforeEach( async function(){ 
           deployer = await getNamedAccounts();
