@@ -19,20 +19,15 @@ contract FundMe{
     using PriceConverter for uint256;
 
 uint256 public constant MINIMUM_USD = 50*1e18; 
-AggregatorV3Interface public priceFeed;
+AggregatorV3Interface private s_priceFeed;
+address[] private s_funders; // to keep list of s_funders
+mapping(address=>uint256) private s_addressToAmountFunded; // to map s_funders to the amount deposited
+address private immutable i_owner;
 
-
-constructor(address priceFeedAddress){  // constructor is a function that gets automatically called up once the contract is deployed.
+constructor(address s_priceFeedAddress){  // constructor is a function that gets automatically called up once the contract is deployed.
   i_owner=msg.sender;   
-  priceFeed = AggregatorV3Interface(priceFeedAddress);
+  s_priceFeed = AggregatorV3Interface(s_priceFeedAddress);
 }
-
-address[] public funders; // to keep list of funders
-
-mapping(address=>uint256) public addressToAmountFunded; // to map funders to the amount deposited
-
-
-address public immutable i_owner;
 
 modifier onlyOwner{
          if(msg.sender !=i_owner){
@@ -45,19 +40,19 @@ modifier onlyOwner{
 
 function fund() public payable onlyOwner {
 
-require(msg.value.getConversionRate( priceFeed)>=MINIMUM_USD,"Didn't send enough");  
-addressToAmountFunded [msg.sender]+=msg.value;// mapping the addrsses to the  amount they funded
-funders.push(msg.sender);
+require(msg.value.getConversionRate( s_priceFeed)>=MINIMUM_USD,"Didn't send enough");  
+s_addressToAmountFunded [msg.sender]+=msg.value;// mapping the addrsses to the  amount they funded
+s_funders.push(msg.sender);
 }
 
 function Withdraw() public onlyOwner {
 
-    for(uint256 fundersIndex=0; fundersIndex<funders.length; fundersIndex++){
-address funder = funders[fundersIndex];
-addressToAmountFunded[funder]=0; 
+    for(uint256 s_fundersIndex=0; s_fundersIndex<s_funders.length; s_fundersIndex++){
+address funder = s_funders[s_fundersIndex];
+s_addressToAmountFunded[funder]=0; 
  }
 
-funders = new address[](0);
+s_funders = new address[](0);
 //payable(msg.sender).transfer(address(this).balance);
 
 // send
@@ -75,6 +70,20 @@ require(callSuccess,"call Failed");
  
 }
 
+function cheaperWithdraw() public onlyOwner{
+    address[] memory funders= s_funders; // Saving an array to memory saves gas
+
+for(uint256 fundersIndex=0; fundersIndex<funders.length; fundersIndex++){
+address funder = funders[fundersIndex];
+s_addressToAmountFunded[funder]=0; 
+ }
+
+s_funders = new address[](0);
+
+(bool callSuccess, )=payable(msg.sender).call{value: address(this).balance}("");
+require(callSuccess,"call Failed");
+}
+
 receive() external payable{
     fund();
 }
@@ -84,7 +93,23 @@ fallback() external payable{
     fund();
 } 
 
+    function getOwner() public view returns(address) {
+    return i_owner;
 }
+function getFunders(uint256 _index) public view returns(address){
+        return s_funders[_index];
+}
+
+function getAddressToAmountFunded(address _funder) public view returns(uint256){
+    return s_addressToAmountFunded[_funder];
+}
+function getPriceFeed() public view returns(AggregatorV3Interface){
+    return s_priceFeed;
+}
+
+}
+
+
 
 
 
