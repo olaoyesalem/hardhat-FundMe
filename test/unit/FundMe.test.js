@@ -1,32 +1,48 @@
 const { assert, expect } = require("chai");
-const { developmentChains,networkConfig} = require("../../helper-hardhat-config");
-const { network } = require("hardhat");
+const { developmentChains,networkConfig, INITIAL_ANSWER,DECIMALS} = require("../../helper-hardhat-config");
+const { network, ethers } = require("hardhat");
 const { deployer } = require("ethers");
+
 
 !developmentChains.includes(network.name)
 	? describe.skip // Only runs on development chains
-	: describe("FundMe", function () {
-			const chainId = network.config.chainId;
-			let FundMe, mockV3Aggregator,  deployer;
-			const sendValue = ethers.utils.parseEther("1"); // 1 eth
-			beforeEach(async function () {
-				// we have to deploy...
-				deployer = (await getNamedAccounts()).deployer;
-				// deployer = await ethers.getdeployer(deployer);
-				await deployments.fixture(["all"]); // this is to deploy all the contratcs
-				FundMe = await ethers.getContract("FundMe", deployer);
-				mockV3Aggregator = await ethers.getContract(
-					"MockV3Aggregator",
-					deployer
-				);
-			});
+	:describe("FundMe", function () {
+    let FundMe,
+      FundMeContractFactory,
+      mockV3Aggregator,
+      ethUsdPriceFeedAddress,
+      chainId;
+    const sendValue = ethers.utils.parseEther("1");
+    beforeEach(async function () {
+      chainId = network.config.chainId;
+      ethUsdPriceFeedAddress = networkConfig[chainId]['ethUsdPriceFeed'];
+      FundMeContractFactory = await ethers.getContractFactory("FundMe");
+      FundMe = await FundMeContractFactory.deploy(ethUsdPriceFeedAddress);
+      mockV3AggregatorFactory = await ethers.getContractFactory('MockV3Aggregator');
+      mockV3Aggregator = await mockV3AggregatorFactory.deploy(DECIMALS,INITIAL_ANSWER);
+    });
+  
+  
+  // :
+      // let FundMe,
+			// 	FundMeContractFactory,
+			// 	mockV3Aggregator,
+			// 	ethUsdPriceFeedAddress,
+			// 	chainId;
+			// const sendValue = ethers.utils.parseEther("0.05");
+			// beforeEach(async function () {
+			// 	chainId = network.config.chainId;
+			// 	ethUsdPriceFeedAddress = networkConfig[chainId]['ethUsdPriceFeed'];
+			// 	FundMeContractFactory = await ethers.getContractFactory("FundMe");
+			// 	FundMe = await FundMeContractFactory.deploy(ethUsdPriceFeedAddress);
+      // });
 
-			// describe("constructor",async function(){
-			//         it( "set the aggregator address correctly ", async function(){
-			//            const response= await FundMe.s_priceFeed;
-			//             assert.equal(response,mockV3Aggregator.address);
-			// })
-			// })
+			describe("constructor",async function(){
+			        it( "set the aggregator address correctly ", async function(){
+			           const response= await FundMe.s_priceFeed;
+			            assert.equal(response,mockV3Aggregator.address);
+			})
+			})
 
 			describe("fallback", async function () {
 				it("should check if fund() will be called", async function () {
