@@ -7,8 +7,7 @@ async function main(){
     console.log("Funding");
     const transactionResponse = await FundMe.Withdraw();
     transactionResponse.wait(1);
-    console.log("Withdrew");
-
+    console.log("Got my funds back");
 }
 
 main()
