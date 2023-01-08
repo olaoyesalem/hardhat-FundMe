@@ -22,6 +22,6 @@
     "hardhat-deploy": "^0.11.22"
   },
   "scripts":{
-    "yarn hardhat test": "yarn test".
+    "yarn hardhat test": "yarn test",
     "yarn hardhat solhint":"yarn lint"
 }
