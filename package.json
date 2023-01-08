@@ -23,4 +23,5 @@
   },
   "scripts":{
     "yarn hardhat test": "yarn test".
+    "yarn hardhat solhint":"yarn lint"
 }
