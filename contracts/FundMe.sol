@@ -24,7 +24,7 @@ address[] private s_funders; // to keep list of s_funders
 mapping(address=>uint256) private s_addressToAmountFunded; // to map s_funders to the amount deposited
 address private immutable i_owner;
 
-constructor(address s_priceFeedAddress){  // constructor is a function that gets automatically called up once the contract is deployed.
+constructor(address s_priceFeedAddress){  // con
   i_owner=msg.sender;   
   s_priceFeed = AggregatorV3Interface(s_priceFeedAddress);
 }
