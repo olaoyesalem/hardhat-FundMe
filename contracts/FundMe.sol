@@ -24,7 +24,7 @@ address[] private s_funders; // to keep list of s_funders
 mapping(address=>uint256) private s_addressToAmountFunded; // to map s_funders to the amount deposited
 address private immutable i_owner;
 
-constructor(address s_priceFeedAddress){  // constr
+constructor(address s_priceFeedAddress){ 
   i_owner=msg.sender;   
   s_priceFeed = AggregatorV3Interface(s_priceFeedAddress);
 }
