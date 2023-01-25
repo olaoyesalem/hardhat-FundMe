@@ -26,9 +26,14 @@ async function connect(){
 async function fund(amount){
     if (typeof window.ethereum !=="undefined" ) {
         console.log(`Funding with ${amount} `);
-        const provider = await 
-        // we need a provider/ connection to thye blockchain
-        //signer/wallet
+           // we need a provider/ connection to thye blockchain
+        const provider = new ethers.providers.Web3Provider(window.ethereum); 
+
+          //signer/wallet
+        const signer =await provider.getSigner();
+        console.log(`Signer : ${signer.toString()}`)
+     
+      
 
         //contract --> Abi and Address
         // we can send a txn
