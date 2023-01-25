@@ -1,5 +1,8 @@
 // in front enbd of javascript we casn't use require()
 // we use the require statemet when we use react, not just raw code.
+import {ethers} from "./ethers-5.6.esm.min.js"
+
+const connectButton = document.getElementById("")
 
 async function connect(){
 
