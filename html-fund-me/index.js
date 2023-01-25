@@ -2,7 +2,11 @@
 // we use the require statemet when we use react, not just raw code.
 import {ethers} from "./ethers-5.6.esm.min.js"
 
-const connectButton = document.getElementById("")
+const connectButton = document.getElementById("connectButton")
+connectButton.onclick = connect
+
+const fundButton = document.getElementById("fundButton")
+fundButton.onclick = fund
 
 async function connect(){
 
@@ -12,9 +16,9 @@ async function connect(){
         } catch (error) {
          console.log(error)   
         }
-    document.getElementById("connectButton").innerHTML = "Connected!!!"
+    connectButton.innerHTML = "Connected!!!"
     }else{
-        document.getElementById("connectButton").innerHTML = "Please, install Metamask!!!";
+        connectButton.innerHTML = "Please, install Metamask!!!";
     }
 
 }
