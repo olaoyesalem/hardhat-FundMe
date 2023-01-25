@@ -1,4 +1,5 @@
 // in front enbd of javascript we casn't use require()
+// we use the require statemet when we use react, not just raw code.
 
 async function connect(){
 
@@ -13,4 +14,12 @@ async function connect(){
         document.getElementById("connectButton").innerHTML = "Please, install Metamask!!!";
     }
 
+}
+
+async function fund(amount){
+    if (typeof window.ethereum !=="undefined" ) {
+        console.log(`Funding with ${amount} of eth`);
+        
+
+    }
 }
