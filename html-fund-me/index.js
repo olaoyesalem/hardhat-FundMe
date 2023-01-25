@@ -18,7 +18,12 @@ async function connect(){
 
 async function fund(amount){
     if (typeof window.ethereum !=="undefined" ) {
-        console.log(`Funding with ${amount} of eth`);
+        console.log(`Funding with ${amount} `);
+        // we need a provider/ connection to thye blockchain
+        //signer/wallet
+
+        //contract --> Abi and Address
+        // we can send a txn
         
 
     }
