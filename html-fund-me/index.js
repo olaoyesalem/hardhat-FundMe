@@ -26,6 +26,7 @@ async function connect(){
 async function fund(amount){
     if (typeof window.ethereum !=="undefined" ) {
         console.log(`Funding with ${amount} `);
+        const provider = await 
         // we need a provider/ connection to thye blockchain
         //signer/wallet
 
