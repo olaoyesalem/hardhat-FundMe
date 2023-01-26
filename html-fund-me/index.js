@@ -1,7 +1,9 @@
 // in front enbd of javascript we casn't use require()
 // we use the require statemet when we use react, not just raw code.
 import {ethers} from "./ethers-5.6.esm.min.js"
+import { contractAddress,abi } from "./constants"
 
+console.log("Hi")
 const connectButton = document.getElementById("connectButton")
 connectButton.onclick = connect
 
@@ -31,7 +33,9 @@ async function fund(amount){
 
           //signer/wallet
         const signer =await provider.getSigner();
-        console.log(`Signer : ${signer.toString()}`)
+        console.log(`Signer : ${signer}`)
+        const contract = new ethers.Contract(contractAddress,abi,signer);
+        const txnResponse = await contract.fund({value: ethers.utils.parseEther(amount)})
      
       
 
