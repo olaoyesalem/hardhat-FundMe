@@ -15,7 +15,7 @@ const { deployer } = require("ethers");
     const sendValue = ethers.utils.parseEther("1");
     beforeEach(async function () {
       chainId = network.config.chainId;
-      ethUsdPriceFeedAddress = networkConfig[chainId]['ethUsdPriceFeed'];
+      ethUsdPriceFeedAddress = networkConfig[chainId][ethUsdPriceFeedAddress];
       FundMeContractFactory = await ethers.getContractFactory("FundMe");
       FundMe = await FundMeContractFactory.deploy(ethUsdPriceFeedAddress);
       mockV3AggregatorFactory = await ethers.getContractFactory('MockV3Aggregator');
@@ -52,6 +52,7 @@ const { deployer } = require("ethers");
 					assert.equal(response, fallback);
 				});
 			});
+
 
 			describe("Fund", async function () {
 				it("should fail if it doesn't send enough eth", async function () {

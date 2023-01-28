@@ -3,7 +3,7 @@ const { getNamedAccounts, ethers, network } = require("hardhat");
 const {
 	developmentChains,
 	networkConfig,
-} = require("../../helper-hardhat-config");
+} = require("../../helper-hcxardhat-config");
 
 developmentChains.includes(network.name)
 	? describe.skip // only runs on test net
@@ -36,6 +36,7 @@ developmentChains.includes(network.name)
 				const endingFundMeBalance = await ethers.provider.getBalance(
 					FundMe.address
 				);
-				assert(endingFundMeBalance.toString(), "0");
+				assert.equal(endingFundMeBalance.toString(), "0");
+				
 			});
 	  });
