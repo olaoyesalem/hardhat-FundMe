@@ -38,7 +38,7 @@ modifier onlyOwner{
 
 
 
-function fund() public payable onlyOwner {
+function fund() public payable  {
 
 require(msg.value.getConversionRate( s_priceFeed)>=MINIMUM_USD,"Didn't send enough");  
 s_addressToAmountFunded [msg.sender]+=msg.value;// mapping the addrsses to the  amount they funded
