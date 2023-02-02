@@ -45,6 +45,7 @@ async function withdraw() {
 			console.log(error);
 		}
 	}
+	
 }
 
 async function fund() {
