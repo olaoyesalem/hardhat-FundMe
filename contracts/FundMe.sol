@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 // 2. Imports
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "./PriceConverter.sol";
+
 error FundMe_notOwner();
 error FundMe_sendFailed();
 
@@ -17,7 +18,7 @@ error FundMe_sendFailed();
  */
 contract FundMe{
     using PriceConverter for uint256;
-
+    
 uint256 public constant MINIMUM_USD = 50*1e18; 
 AggregatorV3Interface private s_priceFeed;
 address[] private s_funders; // to keep list of s_funders
@@ -38,7 +39,7 @@ modifier onlyOwner{
 
 
 
-function fund() public payable  {
+function fund()  public payable  {
 
 require(msg.value.getConversionRate( s_priceFeed)>=MINIMUM_USD,"Didn't send enough");  
 s_addressToAmountFunded [msg.sender]+=msg.value;// mapping the addrsses to the  amount they funded
@@ -53,32 +54,21 @@ s_addressToAmountFunded[funder]=0;
  }
 
 s_funders = new address[](0);
-//payable(msg.sender).transfer(address(this).balance);
-
-// send
-// bool sendSuccess = payable(msg.sender).send(address(this).balance);
-// if(!sendSuccess){
-//     revert sendFailed();
-// }
-// call
-// this is a lower level command; it can be used to call functions wvwn without having thier ABI
 
 (bool callSuccess, )=payable(msg.sender).call{value: address(this).balance}("");
 require(callSuccess,"call Failed");
 
-
- 
 }
 
 function cheaperWithdraw() public onlyOwner{
-    address[] memory funders= s_funders; // Saving an array to memory saves gas
+//     address[] memory funders= s_funders; // Saving an array to memory saves gas
 
-for(uint256 fundersIndex=0; fundersIndex<funders.length; fundersIndex++){
-address funder = funders[fundersIndex];
-s_addressToAmountFunded[funder]=0; 
- }
+// for(uint256 fundersIndex=0; fundersIndex<funders.length; fundersIndex++){
+// address funder = funders[fundersIndex];
+// s_addressToAmountFunded[funder]=0; 
+//  }
 
-s_funders = new address[](0);
+// s_funders = new address[](0);
 
 (bool callSuccess, )=payable(msg.sender).call{value: address(this).balance}("");
 require(callSuccess,"call Failed");
@@ -103,8 +93,13 @@ function getFunders(uint256 _index) public view returns(address){
 function getAddressToAmountFunded(address _funder) public view returns(uint256){
     return s_addressToAmountFunded[_funder];
 }
-function getPriceFeed() public view returns(AggregatorV3Interface){
-    return s_priceFeed;
+
+// function Price() public view returns(uint256){  -- Later, get current price of et6hereum
+//     return s_priceFeed.getPrice();
+// }
+
+function deployer() public view returns(address){
+    return msg.sender;
 }
 
 }

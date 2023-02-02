@@ -1,0 +1,41 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ninterface AggregatorV3Interface {\n  function decimals() external view returns (uint8);\n\n  function description() external view returns (string memory);\n\n  function version() external view returns (uint256);\n\n  function getRoundData(uint80 _roundId)\n    external\n    view\n    returns (\n      uint80 roundId,\n      int256 answer,\n      uint256 startedAt,\n      uint256 updatedAt,\n      uint80 answeredInRound\n    );\n\n  function latestRoundData()\n    external\n    view\n    returns (\n      uint80 roundId,\n      int256 answer,\n      uint256 startedAt,\n      uint256 updatedAt,\n      uint80 answeredInRound\n    );\n}\n"
+    },
+    "contracts/FundMe.sol": {
+      "content": "// SPDX-License-Identifier: MIT\n// 1. Pragma\npragma solidity ^0.8.0;\n// 2. Imports\nimport \"@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol\";\nimport \"./PriceConverter.sol\";\n\nerror FundMe_notOwner();\nerror FundMe_sendFailed();\n\n// if a variable is set one time to a particular value,  we use the keyword \"constant\", \" Immutable\";\n// the variables constants no longer take up a storage spot rather they are inducted into the byte code of the smart contract\n/**\n @title A contract for crowd funding\n @author Olaoye Salem\n @notice This contract is to demo a sample funding contract\n @dev This implements price feeds as our library\n */\ncontract FundMe{\n    using PriceConverter for uint256;\n\nuint256 public constant MINIMUM_USD = 50*1e18; \nAggregatorV3Interface private s_priceFeed;\naddress[] private s_funders; // to keep list of s_funders\nmapping(address=>uint256) private s_addressToAmountFunded; // to map s_funders to the amount deposited\naddress private immutable i_owner;\n\nconstructor(address s_priceFeedAddress){ \n  i_owner=msg.sender;   \n  s_priceFeed = AggregatorV3Interface(s_priceFeedAddress);\n}\n\nmodifier onlyOwner{\n         if(msg.sender !=i_owner){\n    revert FundMe_notOwner();\n}\n    _;\n}\n\n\n\nfunction fund()  public payable  {\n\nrequire(msg.value.getConversionRate( s_priceFeed)>=MINIMUM_USD,\"Didn't send enough\");  \ns_addressToAmountFunded [msg.sender]+=msg.value;// mapping the addrsses to the  amount they funded\ns_funders.push(msg.sender);\n}\n\nfunction Withdraw() public onlyOwner {\n\n    for(uint256 s_fundersIndex=0; s_fundersIndex<s_funders.length; s_fundersIndex++){\naddress funder = s_funders[s_fundersIndex];\ns_addressToAmountFunded[funder]=0; \n }\n\ns_funders = new address[](0);\n\n(bool callSuccess, )=payable(msg.sender).call{value: address(this).balance}(\"\");\nrequire(callSuccess,\"call Failed\");\n\n}\n\nfunction cheaperWithdraw() public onlyOwner{\n    address[] memory funders= s_funders; // Saving an array to memory saves gas\n\nfor(uint256 fundersIndex=0; fundersIndex<funders.length; fundersIndex++){\naddress funder = funders[fundersIndex];\ns_addressToAmountFunded[funder]=0; \n }\n\ns_funders = new address[](0);\n\n(bool callSuccess, )=payable(msg.sender).call{value: address(this).balance}(\"\");\nrequire(callSuccess,\"call Failed\");\n}\n\nreceive() external payable{\n    fund();\n}\n\n// fallback\nfallback() external payable{\n    fund();\n} \n\n    function getOwner() public view returns(address) {\n    return i_owner;\n}\nfunction getFunders(uint256 _index) public view returns(address){\n        return s_funders[_index];\n}\n\nfunction getAddressToAmountFunded(address _funder) public view returns(uint256){\n    return s_addressToAmountFunded[_funder];\n}\n\n// function Price() public view returns(uint256){  -- Later, get current price of et6hereum\n//     return s_priceFeed.getPrice();\n// }\n\nfunction deployer() public view returns(address){\n    return msg.sender;\n}\n\n}\n\n\n\n\n\n\n\n\n\n"
+    },
+    "contracts/PriceConverter.sol": {
+      "content": "//SPDX-License-Identifier:MIT\npragma solidity ^0.8.0;\nimport \"@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol\";\n\nlibrary PriceConverter{\nfunction getPrice(AggregatorV3Interface priceFeed)internal view returns(uint256){\n  \n    //AggregatorV3Interface priceFeed = AggregatorV3Interface(0x8A753747A1Fa494EC906cE90E9f37563A8AF630e);\n    (,int256 price,,,)=priceFeed.latestRoundData();\n     //This is the price of ETH in USD \n    // $1,280.00000000 = 1eth // this has 8 decimal place\n    return uint256(price*1e10);\n}\nfunction getVersion(AggregatorV3Interface priceFeed) internal view returns(uint256){\n    //AggregatorV3Interface priceFeed = AggregatorV3Interface(0x8A753747A1Fa494EC906cE90E9f37563A8AF630e);\n    return priceFeed.version();\n}\nfunction getConversionRate(uint256 ethAmount,AggregatorV3Interface priceFeed)internal view returns(uint256){// to get the amount of any ETH in USD\nuint256 ethPrice= getPrice( priceFeed);\n//3000_000000000000000000 = ETH/USD price\n// 1_000000000000000000 (wei) ETH we are sending\n uint256 ethPriceInUsd = (ethPrice * ethAmount)/1e18;\n //3000 USD\nreturn ethPriceInUsd;\n}\n\n}"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
