@@ -1,7 +1,7 @@
 // in front end of javascript we casn't use require()
 // we use the require statemet when we use react, not just raw code.
 import { ethers } from "./ethers-5.6.esm.min.js";
-import { contractAddress, abi } from "./constants.js";
+import { contractAddress, abi } from "./constants.js";                                                                                                                                                                                                                                                                                                                                                                         
 
 const connectButton = document.getElementById("connectButton");
 connectButton.onclick = connect;
@@ -63,10 +63,7 @@ async function fund() {
 			console.log(error);
 		}
 
-		console.log(` withdrawing `)
-		const txnResponse = await contract.Withdraw();
-		await listenForTxnMine(txnResponse,provider)
-		console.log(`Done`)
+		
 	}
 
 }
