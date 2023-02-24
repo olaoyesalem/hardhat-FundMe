@@ -1,4 +1,4 @@
-const { assert} = require("chai");
+const { assert } = require("chai");
 const { getNamedAccounts, ethers, network } = require("hardhat");
 const {
 	developmentChains,
