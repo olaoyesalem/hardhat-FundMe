@@ -8,7 +8,7 @@
 * [Status](#status)
 
 ## General info
-This project demonstrates a basic Hardhat use case. It comes with a sample contract that shows crowdfunding,  a test for that contract, and a script that deploys that contract.
+This project demonstrates a basic Hardhat use case. It  comes with a sample contract that shows crowdfunding,  a test for that contract, and a script that deploys that contract.
 
 ## Technologies
 * Solidity
